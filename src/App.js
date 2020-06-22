@@ -5,18 +5,57 @@ import Person from './Person/Person'
 const App = (props) => {
   const [personsState, setPersonsState] = useState({
     persons: [
-      {name: 'Alejandro', age: '26'},
-      {name: 'Sol', age: '23'},
-      {name: 'Maxi', age: '23'}
+      { id: 1, name: 'Alejandro', age: '26' },
+      { id: 2, name: 'Sol', age: '23' },
+      { id: 3, name: 'Maxi', age: '23' }
     ]
   });
+
+  const [tooglePersonState, setTooglePersonState] = useState(false);
+
+  const tooglePersons = () => {
+    setTooglePersonState(!tooglePersonState);
+  }
+
+  const deletePersonHandler = (index) => {
+    const persons = [...personsState.persons];
+    persons.splice(index, 1);
+    setPersonsState({ persons: persons });
+  }
+
+  const nameChangedHandler = (event, id) => {
+    const personIndex = personsState.persons.findIndex(p => {
+      return p.id === id
+    });
+
+    const person = { ...personsState.persons[personIndex] };
+
+    person.name = event.target.value;
+
+    const persons = [...personsState.persons];
+    persons[personIndex] = person;
+
+    setPersonsState({ persons: persons })
+
+  }
+
+  let persons = null;
+
+  if (tooglePersonState) {
+    persons = personsState.persons.map((p, index) => {
+      return <Person key={index}
+        name={p.name}
+        age={p.age}
+        click={() => deletePersonHandler(index)}
+        change={(event) => nameChangedHandler(event, p.id)} />
+    })
+  }
 
   return (
     <div className="App">
       <h1>Hi, I'm React App</h1>
-      <Person name={personsState.persons[0].name} age={personsState.persons[0].age} />
-      <Person name={personsState.persons[1].name} age={personsState.persons[1].age} >My hobbies are: Eat icecream</Person>
-      <Person name={personsState.persons[2].name} age={personsState.persons[2].age} />
+      <button onClick={tooglePersons}>Show/Hide persons</button>
+      {persons}
     </div>
   );
 }
